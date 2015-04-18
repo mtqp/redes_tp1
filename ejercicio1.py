@@ -6,3 +6,5 @@ def arp_monitor_callback(pkt):
         return pkt.sprintf("%ARP.hwsrc% %ARP.psrc%")
 
 sniff(prn=arp_monitor_callback, filter="arp", store=0)
+
+#hagamos frula frula frula
