@@ -4,6 +4,8 @@ from scapy.all import *
 def packetPrinter(pkt):
     return pkt.show() #.summary()
 
+sniff(prn = lambda pkt : pkt.summary(), offline = "mylog.cap", filter = "arp")    
+    
 sniff(prn = packetPrinter, filter="arp")
 #sniff(prn = lambda x : x.summary(), filter="arp")
 
