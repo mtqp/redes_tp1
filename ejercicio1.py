@@ -7,4 +7,7 @@ def arp_monitor_callback(pkt):
 
 sniff(prn=arp_monitor_callback, filter="arp", store=0)
 
+#sniff(prn = lambda x : x.summary())
+#sniff(prn = lambda x : x.summary(), filter="arp")
+
 #hagamos frula frula frula
