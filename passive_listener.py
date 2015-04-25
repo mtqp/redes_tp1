@@ -7,7 +7,7 @@ packets = []
 
 def log_packet(pkt):
     packets.append(pkt)
-    if (len(packets) % 10) == 0:
+    if (len(packets) % 1000) == 0:
         print "Reached " + str(len(packets)) + " packets logged at: " + str(datetime.now().time())
 
 

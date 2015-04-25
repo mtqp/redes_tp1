@@ -1,69 +1,35 @@
 import sys
-#from datetime import datetime, timedelta
 from scapy.all import *
+from source import * 
 
-#packets_count = 0
-type_source = dict()
-arp_source = dict()
+type_source = source()
+arp_source = source()
 
-#hay codigo repetido que podriamos refactorizar!
-def analize_packet_type(packet):
-    #packets_count += 1
-    packet_type = packet.type
-    if type_source.has_key(packet_type):
-        type_source[packet_type] += 1
-    else:
-        type_source[packet_type] = 1
-
-#hay codigo repetido que podriamos refactorizar!
 def analize_arp_packet(packet):
     if packet.type == int(0x806):
-        #packet.show()
         op_code = packet[ARP].op
         source = packet[ARP].psrc
         destination = packet[ARP].pdst
-        key = (op_code, source, destination)
-        if arp_source.has_key(key):
-            arp_source[key] += 1
-        else:
-            arp_source[key] = 1    
-        
-#hay codigo repetido que podriamos refactorizar!        
-def save_types_as_csv(file, types):
-    csv = open(file,"w")
-    csv.write("Type,Count\n")
-    for type in types:
-        csv.write(hex(type) + "," + str(type_source[type]) + "\n")
-    csv.close()
+        arp_source.add_packet((op_code, source, destination))
 
-def save_arps_as_csv(file, arp_keys):
-    csv = open(file,"w")
-    csv.write("OpCode,Source,Destination,Count\n")
-    for arp_key in arp_keys:
-        parsedKey = str(arp_key).replace("(","").replace(")","")
-        csv.write(parsedKey + "," + str(arp_source[arp_key]) + "\n")
-    csv.close()
+def type_key_parser(type):
+    return hex(type)
     
-#hay codigo repetido que podriamos refactorizar!
+def arp_key_parser(arp_key):
+    return str(arp_key).replace("(","").replace(")","")
+    
 def sniff_types(source_file, statistics_file):
-    sniff(prn = analize_packet_type, offline = source_file)
-
-    all_types = type_source.keys()
-    all_types.sort()
-
-    save_types_as_csv(statistics_file, all_types)
+    header = "Type,Count"
     
-#hay codigo repetido que podriamos refactorizar!
+    sniff(prn = lambda pkt : type_source.add_packet(pkt.type), offline = source_file)
+    type_source.save(statistics_file, header, type_key_parser)
+        
 def sniff_arp(source_file, statistics_file):
+    header = "OpCode,Source,Destination,Count"
+    
     sniff(prn = analize_arp_packet, offline = source_file, filter="arp")
+    arp_source.save(statistics_file, header, arp_key_parser)
 
-    all_arps = arp_source.keys()
-    all_arps.sort()
-    
-    save_arps_as_csv(statistics_file, all_arps)
-    
-    #do smth with the keys maybe and then save it up (there's a way to override
-    #the str function and prettyprint the fuck outta it
         
 if (len(sys.argv) < 4):
     print 'Usage: python source_analizer.py [analysis source: type|arp][source file][statistics file]'
@@ -72,7 +38,6 @@ else:
     source_file = sys.argv[2]
     statistics_file = sys.argv[3]
         
-    #parametrizar estoo con funciones!
     if analysis == "type":
         sniff_types(source_file, statistics_file)
     elif analysis == "arp":
