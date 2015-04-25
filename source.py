@@ -18,7 +18,7 @@ class source:
 
         entropy = 0
         base_2 = 2
-        header += ",Probability\n"
+        header += ",Probability,Event Information\n"
         
         csv = open(statistics_file,"w")
         csv.write(header)
@@ -26,14 +26,14 @@ class source:
             message_count = self.messages[message]
             message_probability = float(message_count)/self.count
             
-            message_entropy = message_probability * math.log(message_probability, base_2)
-            entropy -= message_entropy
+            event_information = (-1) * math.log(message_probability, base_2)
+            entropy += message_probability * event_information
             
-            #print "Entropy of: " + parse(message) + " is: " + str(message_entropy)
-            #print "Entropy so far is: " + str(entropy)
+            csv.write(parse(message) + "," + str(self.messages[message]) + "," + str(message_probability) + "," + str(event_information) + "\n")
             
-            csv.write(parse(message) + "," + str(self.messages[message]) + "," + str(message_probability) + "\n")
-            
-        csv.write("Entropy\n")
-        csv.write(str(entropy))
+        csv.write("Source entropy\n")
+        csv.write(str(entropy) + "\n")
+        
+        csv.write("Max entropy\n")
+        csv.write(str(math.log(self.count)))
         csv.close()

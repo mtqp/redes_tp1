@@ -7,7 +7,7 @@ type_source = source()
 arp_source = source()
 
 def print_source_update(processing_source):
-    if (processing_source.count % 10) == 0:
+    if (processing_source.count % 5000) == 0:
         print "Reached " + str(processing_source.count) + " packets processed at: " + str(datetime.now().time())
 
 def extract_only_arp_packet(packet):
@@ -32,13 +32,13 @@ def arp_key_parser(arp_key):
 def sniff_types(source_file, statistics_file):
     header = "Type,Count"
     
-    sniff(prn = extract_type_from_packet, offline = source_file)
+    sniff(count = 170000, prn = extract_type_from_packet, offline = source_file)
     type_source.save(statistics_file, header, type_key_parser)
         
 def sniff_arp(source_file, statistics_file):
     header = "OpCode,Source,Destination,Count"
     
-    sniff(prn = extract_only_arp_packet, offline = source_file, filter="arp")
+    sniff(count = 170000, prn = extract_only_arp_packet, offline = source_file, filter="arp")
     arp_source.save(statistics_file, header, arp_key_parser)
 
         
