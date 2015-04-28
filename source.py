@@ -31,7 +31,7 @@ class source:
             
             csv.write(parse(message) + "," + str(self.messages[message]) + "," + str(message_probability) + "," + str(event_information) + "\n")
             
-        max_entropy = math.log(len(self.messages.keys()))
+        max_entropy = math.log(len(self.messages.keys()), base_2)
         csv.write("Source entropy\n")
         csv.write(str(entropy) + "\n")
         
